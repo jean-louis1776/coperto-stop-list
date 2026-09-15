@@ -1,5 +1,5 @@
 export const focusRing =
-  'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+  'outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-accent';
 
 export const controlBase =
   'h-10 rounded-lg border bg-surface px-3 text-sm text-ink transition-colors disabled:cursor-not-allowed disabled:opacity-50';
