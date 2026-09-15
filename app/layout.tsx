@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Toaster } from '@/shared/ui/Toaster';
 import { Providers } from './providers';
 import './globals.css';
 
@@ -14,7 +15,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="ru" className={inter.variable}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

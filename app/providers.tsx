@@ -2,6 +2,7 @@
 
 import { MutationCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { MotionConfig } from 'motion/react';
 import { useState, type ReactNode } from 'react';
 import { useToastStore } from '@/shared/model/toast-store';
 
@@ -23,7 +24,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
       <ReactQueryDevtools buttonPosition="bottom-left" />
     </QueryClientProvider>
   );
