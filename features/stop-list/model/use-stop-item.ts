@@ -6,8 +6,9 @@ import {
 } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import type { MenuItem, MenuItemStatus, StopItemPayload } from '@/entities/menu/types';
+import { ApiError } from '@/shared/api/http';
 import { resumeMenuItem, stopMenuItem } from '../api/menu-api';
-import { menuKeys } from './queries';
+import { menuKeys, type MenuItemAction } from './queries';
 
 interface ItemVariables {
   id: string;
@@ -15,6 +16,25 @@ interface ItemVariables {
 
 interface StopItemVariables extends ItemVariables {
   payload: StopItemPayload;
+}
+
+export interface StopPayloadFieldError {
+  field: keyof StopItemPayload;
+  message: string;
+}
+
+const STOP_PAYLOAD_FIELDS = [
+  'reason',
+  'until',
+] as const satisfies readonly (keyof StopItemPayload)[];
+
+export function getStopPayloadFieldErrors(error: unknown): StopPayloadFieldError[] {
+  if (!(error instanceof ApiError)) return [];
+
+  return STOP_PAYLOAD_FIELDS.flatMap((field) => {
+    const message = error.fieldErrors?.[field]?.[0];
+    return message ? [{ field, message }] : [];
+  });
 }
 
 function updateItemInLists(
@@ -35,7 +55,7 @@ function findCachedItem(queryClient: QueryClient, id: string): MenuItem | undefi
 }
 
 function useOptimisticItemMutation<TVariables extends ItemVariables>(
-  action: 'stop' | 'resume',
+  action: MenuItemAction,
   mutationFn: (variables: TVariables) => Promise<MenuItem>,
   getOptimisticStatus: (variables: TVariables) => MenuItemStatus,
 ) {
@@ -60,9 +80,9 @@ function useOptimisticItemMutation<TVariables extends ItemVariables>(
     onSuccess: (item) => {
       updateItemInLists(queryClient, item.id, () => item);
     },
-    onSettled: async () => {
+    onSettled: () => {
       if (queryClient.isMutating({ mutationKey: menuKeys.mutations() }) === 1) {
-        await queryClient.invalidateQueries({ queryKey: menuKeys.lists() });
+        void queryClient.invalidateQueries({ queryKey: menuKeys.lists() });
       }
     },
   });
@@ -93,9 +113,9 @@ function getItemId(variables: unknown): string | undefined {
     : undefined;
 }
 
-export function usePendingItemIds(): ReadonlySet<string> {
+export function usePendingItemIds(action: MenuItemAction): ReadonlySet<string> {
   const ids = useMutationState({
-    filters: { mutationKey: menuKeys.mutations(), status: 'pending' },
+    filters: { mutationKey: menuKeys.mutation(action), status: 'pending' },
     select: (mutation) => getItemId(mutation.state.variables),
   });
 

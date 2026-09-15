@@ -19,6 +19,13 @@ export function validateUntil(value: string | null, now = Date.now()): string | 
   return null;
 }
 
+export function getUntilSlotRange(now = Date.now()): { min: number; max: number } {
+  return {
+    min: Math.floor(now / UNTIL_STEP_MS) * UNTIL_STEP_MS + UNTIL_STEP_MS,
+    max: Math.floor((now + MAX_AHEAD_MS) / UNTIL_STEP_MS) * UNTIL_STEP_MS,
+  };
+}
+
 export const shopSchema = z.enum(SHOPS);
 export const statusKindSchema = z.enum(STATUS_KINDS);
 export const stopReasonSchema = z.enum(STOP_REASONS, { error: 'Выберите причину' });

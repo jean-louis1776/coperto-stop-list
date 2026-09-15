@@ -1,9 +1,8 @@
 'use client';
 
-import { clsx } from 'clsx';
 import { AnimatePresence, motion } from 'motion/react';
 import { useToastStore } from '@/shared/model/toast-store';
-import { focusRing } from './styles';
+import { CloseButton } from './CloseButton';
 
 export function Toaster() {
   const toasts = useToastStore((state) => state.toasts);
@@ -36,24 +35,7 @@ export function Toaster() {
               />
             </svg>
             <p className="flex-1 text-sm text-ink">{toast.message}</p>
-            <button
-              type="button"
-              aria-label="Закрыть уведомление"
-              onClick={() => dismiss(toast.id)}
-              className={clsx(
-                '-m-1 rounded-md p-1 text-muted transition-colors hover:text-ink',
-                focusRing,
-              )}
-            >
-              <svg aria-hidden viewBox="0 0 20 20" className="size-4">
-                <path
-                  d="m5 5 10 10M15 5 5 15"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
+            <CloseButton label="Закрыть уведомление" onClick={() => dismiss(toast.id)} />
           </motion.div>
         ))}
       </AnimatePresence>

@@ -8,7 +8,9 @@ export async function GET(request: NextRequest) {
   const filters = menuFiltersSchema.parse(Object.fromEntries(request.nextUrl.searchParams));
 
   await delay(LIST_DELAY_MS);
-  if (shouldFail(LIST_FAILURE_RATE)) return serverErrorResponse('Не удалось загрузить меню');
+  if (shouldFail(LIST_FAILURE_RATE)) {
+    return serverErrorResponse('Сервер не ответил. Попробуйте ещё раз.');
+  }
 
   return NextResponse.json(listMenuItems(filters));
 }

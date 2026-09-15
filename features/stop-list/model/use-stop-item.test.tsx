@@ -3,9 +3,10 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { MenuItem, MenuItemStatus, StopItemPayload } from '@/entities/menu/types';
+import { ApiError } from '@/shared/api/http';
 import { stopMenuItem } from '../api/menu-api';
 import { menuKeys } from './queries';
-import { useStopItem } from './use-stop-item';
+import { getStopPayloadFieldErrors, useStopItem } from './use-stop-item';
 
 vi.mock('../api/menu-api', () => ({
   fetchMenuItems: vi.fn(),
@@ -47,6 +48,24 @@ function setup() {
 
 afterEach(() => {
   vi.mocked(stopMenuItem).mockReset();
+});
+
+describe('getStopPayloadFieldErrors', () => {
+  it('maps server validation errors to form fields', () => {
+    const error = new ApiError('Проверьте причину и срок стопа', {
+      status: 400,
+      code: 'validation_error',
+      fieldErrors: { until: ['Время должно быть в будущем'], extra: ['ignored'] },
+    });
+
+    expect(getStopPayloadFieldErrors(error)).toEqual([
+      { field: 'until', message: 'Время должно быть в будущем' },
+    ]);
+  });
+
+  it('returns nothing for non-api errors', () => {
+    expect(getStopPayloadFieldErrors(new Error('Network'))).toEqual([]);
+  });
 });
 
 describe('useStopItem', () => {

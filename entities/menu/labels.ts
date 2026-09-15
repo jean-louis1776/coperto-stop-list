@@ -20,8 +20,8 @@ export const STOP_REASON_LABELS: Record<StopReason, string> = {
 
 const timeFormat = new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit' });
 const dateTimeFormat = new Intl.DateTimeFormat('ru-RU', {
-  day: 'numeric',
-  month: 'short',
+  day: '2-digit',
+  month: '2-digit',
   hour: '2-digit',
   minute: '2-digit',
 });

@@ -2,12 +2,14 @@ import { queryOptions } from '@tanstack/react-query';
 import type { MenuFilters } from '@/entities/menu/types';
 import { fetchMenuItems } from '../api/menu-api';
 
+export type MenuItemAction = 'stop' | 'resume';
+
 export const menuKeys = {
   all: ['menu-items'] as const,
   lists: () => [...menuKeys.all, 'list'] as const,
   list: (filters: MenuFilters) => [...menuKeys.lists(), filters] as const,
   mutations: () => [...menuKeys.all, 'mutation'] as const,
-  mutation: (action: 'stop' | 'resume') => [...menuKeys.mutations(), action] as const,
+  mutation: (action: MenuItemAction) => [...menuKeys.mutations(), action] as const,
 };
 
 export const menuQueries = {
